@@ -115,7 +115,7 @@ function sendActivationLink(
     { firstName, lastName, email },
     process.env.JWT_ACTIVATION_KEY
   );
-  const verificationLink = `${process.env.FRONTEND_URI}/auth/activation/${emailVerifyToken}`;
+  const verificationLink = `${process.env.FRONTEND_URI}/#/activation/${emailVerifyToken}`;
   if (user) {
     updateUser(
       { email },
