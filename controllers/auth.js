@@ -207,6 +207,7 @@ exports.signin = (req, resp) => {
           if (valid) {
             const token = jwt.sign({ email }, process.env.JWT_ACTIVATION_KEY);
             return resp.json({
+              message: "Log in successful",
               access_token: token,
             });
           }
