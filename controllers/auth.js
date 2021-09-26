@@ -205,11 +205,15 @@ exports.signin = (req, resp) => {
         .compare(password, user.password)
         .then((valid) => {
           if (valid) {
-            const token = jwt.sign({ email }, process.env.JWT_ACTIVATION_KEY);
-            return resp.json({
-              message: "Log in successful",
-              access_token: token,
-            });
+            if (user.isActivated) {
+              const token = jwt.sign({ email }, process.env.JWT_ACTIVATION_KEY);
+              return resp.json({
+                message: "Log in successful",
+                access_token: token,
+              });
+            } else {
+              return resp.json({ error: "Unverified email address" });
+            }
           }
           return resp.status(401).json({
             error: "Invalid password.",
@@ -291,7 +295,7 @@ exports.forgetPassword = (req, resp) => {
         { firstName: user.firstName, lastName: user.lastName, email },
         process.env.JWT_ACTIVATION_KEY
       );
-      const resetLink = `${process.env.FRONTEND_URI}/auth/resetPassword/${resetPasswordToken}`;
+      const resetLink = `${process.env.FRONTEND_URI}/#/resetPassword/${resetPasswordToken}`;
 
       sendResetMail(email, resetLink, resp);
     } else {
