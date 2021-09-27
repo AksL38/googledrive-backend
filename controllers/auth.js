@@ -241,7 +241,7 @@ exports.verifyEmail = (req, resp) => {
         message: "Valid email",
       });
     } else {
-      return resp.status(401).json({
+      return resp.status(200).json({
         error: "Invalid email",
       });
     }
