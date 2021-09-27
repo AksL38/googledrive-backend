@@ -66,7 +66,7 @@ function saveUser(
       });
       newUser.save((err, success) => {
         if (err) {
-          return resp.status(400).json({ error: err });
+          return resp.status(500).json({ error: err.message });
         }
         sendMail(email, verificationLink).then((data) => {
           resp.json({
@@ -76,7 +76,7 @@ function saveUser(
       });
     })
     .catch((error) => {
-      return resp.status(400).json({
+      return resp.status(500).json({
         error: "Something went wrong in password encryption:" + error.message,
       });
     });
@@ -98,7 +98,7 @@ function updateUser(filter, update, message, resp, verificationLink = null) {
       }
     })
     .catch((error) => {
-      resp.status(400).json({ error });
+      resp.status(500).json({ error });
     });
 }
 
@@ -143,9 +143,9 @@ exports.signup = (req, resp) => {
   User.findOne({ email }).exec((err, user) => {
     if (user) {
       if (user.isActivated) {
-        return resp
-          .status(400)
-          .json({ error: "Email address already registered and verified!" });
+        return resp.json({
+          error: "Email address already registered and verified!",
+        });
       } else {
         let message =
           "Email already registered. Account unverified. New activation email sent to email address: " +
@@ -220,12 +220,13 @@ exports.signin = (req, resp) => {
           });
         })
         .catch((err) => {
-          return resp.status(400).json({
-            error: err.message,
+          return resp.status(500).json({
+            error:
+              "Something went wrong in password decryption: " + err.message,
           });
         });
     } else {
-      return resp.status(400).json({
+      return resp.status(401).json({
         error: "Invalid email",
       });
     }
@@ -240,7 +241,7 @@ exports.verifyEmail = (req, resp) => {
         message: "Valid email",
       });
     } else {
-      return resp.status(400).json({
+      return resp.status(401).json({
         error: "Invalid email",
       });
     }
@@ -272,7 +273,7 @@ async function sendResetMail(recipient, resetLink, resp) {
 
     const result = await transport.sendMail(mailOptions);
     if (result.accepted.length === 0) {
-      resp.status(400).send("Failed to send mail: " + result.response);
+      resp.status(500).send("Failed to send mail: " + result.response);
     } else {
       resp
         .status(200)
@@ -281,7 +282,7 @@ async function sendResetMail(recipient, resetLink, resp) {
         );
     }
   } catch (error) {
-    resp.status(400).json({
+    resp.status(500).json({
       error,
     });
   }
@@ -299,7 +300,7 @@ exports.forgetPassword = (req, resp) => {
 
       sendResetMail(email, resetLink, resp);
     } else {
-      return resp.status(400).send("User not found! Send verified email");
+      return resp.status(401).send("User not found! Send verified email");
     }
   });
 };
