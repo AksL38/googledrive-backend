@@ -15,7 +15,12 @@ app.use("/auth", authRoutes);
 app.use((req, resp, next) => {
   const header = req.headers["authorization"];
   const token = header && header.split(" ")[1];
-  if (token == null) return resp.status(401).send("Unauthorised as no token.");
+  if (token == null)
+    return resp
+      .status(401)
+      .send(
+        "Unauthorised as no token. Please include bearer token in authorization header"
+      );
 
   jwt.verify(token, process.env.JWT_ACTIVATION_KEY, (err, decodedToken) => {
     if (err) return resp.status(403).send(err.message);
@@ -25,7 +30,7 @@ app.use((req, resp, next) => {
 });
 
 app.get("/", function (req, res) {
-  res.send("Hello World");
+  res.send("Hello " + req.user.email);
 });
 
 const port = process.env.PORT;
