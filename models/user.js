@@ -1,5 +1,34 @@
 const mongoose = require("mongoose");
 
+const fileSchema = new mongoose.Schema(
+  {
+    url: {
+      type: String,
+      required: true,
+    },
+    fileName: {
+      type: String,
+      required: true,
+    },
+    uid: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const folderSchema = new mongoose.Schema(
+  {
+    folderName: {
+      type: String,
+      required: true,
+    },
+    files: [fileSchema],
+  },
+  { timestamps: true }
+);
+
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -27,8 +56,13 @@ const userSchema = new mongoose.Schema(
     emailVerifyToken: {
       type: String,
     },
+    folders: [folderSchema],
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = {
+  User: mongoose.model("User", userSchema),
+  Folder: mongoose.model("Folder", folderSchema),
+  File: mongoose.model("File", fileSchema),
+};

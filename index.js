@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 require("./db/connectDB");
 const authRoutes = require("./routes/auth");
+const dashRoutes = require("./routes/dashboard");
 const jwt = require("jsonwebtoken");
 
 const app = express();
@@ -14,7 +15,7 @@ app.use("/auth", authRoutes);
 
 app.use((req, resp, next) => {
   const header = req.headers["authorization"];
-  const token = header && header.split(" ")[1];
+  const token = header ? header.split(" ")[1] : null;
   if (token == null)
     return resp
       .status(401)
@@ -29,9 +30,7 @@ app.use((req, resp, next) => {
   });
 });
 
-app.get("/", function (req, res) {
-  res.send("Hello " + req.user.email);
-});
+app.use("/", dashRoutes);
 
 const port = process.env.PORT;
 app.listen(port, () => {

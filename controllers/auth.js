@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const { User } = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -63,6 +63,7 @@ function saveUser(
         password: data,
         isActivated: false,
         emailVerifyToken,
+        folders: [],
       });
       newUser.save((err, success) => {
         if (err) {
